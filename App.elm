@@ -1,13 +1,13 @@
 import StartApp.Simple exposing (start)
-import Html exposing (Html, div, text, strong, ul, li)
+import Html exposing (Html, div, span, text, strong, ul, li)
 import Domain exposing (..)
 import Maybe
 
 
-type alias Model = Domains
+type alias Model = List (Theme, Domain)
 model : Model
 model
-  = domains
+  = themeDomainMap
 
 
 main : Signal Html
@@ -25,10 +25,10 @@ view : Signal.Address Action -> Model -> Html
 view address model =
   div [] (List.map viewDomain model)
 
-viewDomain : Domain -> Html
-viewDomain domain =
-  div [] [ strong [] [text (toString domain.domain)]
-         , ul [] (List.map viewTheme domain.themes)
+viewDomain : (Theme, Domain) -> Html
+viewDomain mapping =
+  div [] [ strong [] [text (toString (fst mapping))]
+         , text (toString (snd mapping))
          ]
 
 viewTheme : Theme -> Html

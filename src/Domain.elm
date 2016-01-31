@@ -1,6 +1,10 @@
-module Domain (domains, Domains, Domain, Theme, Group, Person) where
+module Domain (Person, Team, Domain, Theme, DomainThemes, domains, themeDomainMap ) where
 
-type alias Name : String
+
+import Dict exposing (Dict)
+
+
+type alias Name = String
 
 
 type alias Person =
@@ -16,7 +20,7 @@ type alias Team =
   }
 
 
-type Group
+type Domain
   = Executing
   | Influencing
   | RelationBuilding
@@ -60,16 +64,13 @@ type Theme
   | Woo
 
 
-type alias Domain =
-  { domain : Group
+type alias DomainThemes =
+  { domain : Domain
   , themes : List Theme
   }
 
 
-type alias Domains = List Domain
-
-
-domains : List Domain
+domains : List DomainThemes
 domains =
   [ { domain = Executing
     , themes =
@@ -122,3 +123,25 @@ domains =
       ]
     }
   ]
+
+
+themeDomainMap : List (Theme, Domain)
+themeDomainMap
+  = List.map makeThemeDomainMap domains
+  |> List.concat
+
+
+makeThemeDomainMap : DomainThemes -> List (Theme, Domain)
+makeThemeDomainMap domainTheme
+  = flattenDomainThemes domainTheme.domain domainTheme.themes []
+
+
+flattenDomainThemes : Domain -> List Theme -> List (Theme, Domain) -> List (Theme, Domain)
+flattenDomainThemes domain themes mapping
+  = case themes of
+    [] ->
+      mapping
+
+    first :: rest ->
+      (first, domain) :: mapping
+      |> flattenDomainThemes domain rest
